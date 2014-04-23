@@ -1,0 +1,23 @@
+// this bit of complexity is to pull down the main build script from the alclabs maven repository
+// and then apply it.
+configurations { gradleScript }
+repositories { maven { url 'http://repo.alcshare.com' } }
+dependencies { gradleScript group: 'com.alcshare', name: 'addon-gradle', ext: 'gradle', version: '1.4' }
+apply from: configurations.gradleScript.resolve().iterator().next()
+
+info {
+  name = 'Notes'
+  description = 'Provides a way to make and see notes that can be viewable from a graphic'
+  version = '1.0 Pre-release'
+  vendor = 'Automated Logic'
+  systemMenuProvider = 'com.controlj.addon.notes.NotesMenu'
+}
+
+dependencies {
+    providedCompile 'com.controlj.green:addonsupport-api-addon:1.4.0'
+    providedCompile 'com.controlj.green:directaccess-api-addon:1.4.0'
+    providedCompile 'com.controlj.green:webaccess-api-addon:1.4.0'
+    providedCompile 'javax.servlet:servlet-api:2.5'
+
+    compile 'org.json:json:20090211'
+}

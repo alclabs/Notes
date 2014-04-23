@@ -1,0 +1,114 @@
+.notes-dialog .ui-accordion-header {
+    height: 1.3em;
+    line-height: 1.5em;
+    overflow: hidden;
+}
+
+.notes-dialog * {
+    text-align: left;
+}
+
+.notes-area {
+    height: 100%;
+}
+
+.notes-text {
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background: transparent;
+    border: none;
+    resize: none;
+    overflow: auto;
+    font-size: 1.3em ! important;
+    white-space: pre;
+}
+
+.notes-settings {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.notes-settings-menu {
+    width: 13em;
+    font-size: 12px;
+    position: absolute;
+    background: lightgray;
+    z-index: 1;
+}
+
+.notes-settings-menu * {
+    cursor: pointer;
+}
+
+ul.notes-settings-menu .ui-menu-item a.ui-state-focus {
+    border: inherit;
+    background: inherit;
+    margin: inherit;
+}
+
+ul.notes-settings-menu .ui-state-disabled {
+    margin: inherit;
+}
+
+.notes-buttons {
+    padding-top: 10px;
+    text-align: center;
+}
+
+div.notes-dialog {
+    font-size: medium;
+    line-height: normal;
+    border-radius: 0;
+    box-shadow: 8px 8px 11px rgba(33,33,33,.7);
+    -webkit-transform: rotate(-1.5deg);
+    -o-transform: rotate(-1.5deg);
+    -moz-transform: rotate(-1.5deg);
+    background: #ffa;
+    background-image: -webkit-gradient(linear, left top, right bottom, color-stop(.4, #ffb), color-stop(1, #ff8));
+    background-image: -moz-linear-gradient(left top, #ffb 40%, #ff8 100%);
+    -webkit-backface-visibility: hidden; /* magic command that makes chrome anti-alias (smooth) the edges of rotated elements */
+}
+
+.notes-dialog:before {
+    content: ' ';
+    display: block;
+    position: absolute;
+    top: -15px;
+    width: 18%;
+    left: 41%; /* center it (50% - half the width: 9%) = 41%*/
+    height: 25px;
+    z-index: 2;
+    background-color: rgba(243,245,228,0.5);
+    border: 2px solid rgba(255,255,255,0.5);
+    box-shadow: 2px 2px 2px #BBB;
+    -webkit-transform: rotate(4deg);
+    -moz-transform: rotate(4deg);
+    -o-transform: rotate(4deg);
+    -webkit-backface-visibility: hidden; /* magic command that makes chrome anti-alias (smooth) the edges of rotated elements */
+}
+
+.notes-dialog > .ui-dialog-titlebar {
+    display: none;
+}
+
+.notes-dialog > .ui-dialog-content {
+    background: transparent;
+}
+
+.ui-widget-overlay {
+    opacity: .7;
+}
+
+.icon-options {
+    background-position: 0 0;
+}
+
+.notes-settings.ui-icon-custom {
+    margin-top: 5px;
+    background-image: url(images/ui-icons_custom.png);
+}

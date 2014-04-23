@@ -1,0 +1,50 @@
+
+.notes-small {
+    position: relative;
+    background: #ffa;
+    background-image: -webkit-gradient(linear, left top, right bottom, color-stop(.4, #ffb), color-stop(1, #ff8));
+    background-image: -moz-linear-gradient(left top, #ffb 40%, #ff8 100%);
+    white-space: pre;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+    -webkit-transform: rotate(-4deg);
+}
+
+.notes-small:before {
+    content: ' ';
+    display: block;
+    position: absolute;
+    top: -5px;
+    width: 24%;
+    left: 32%; /* a little left of center (50% - half the width: 12%) = 38% would be centered*/
+    height: 5px;
+    z-index: 2;
+    background-color: rgba(243,245,228,0.5);
+    border: 2px solid rgba(255,255,255,0.5);
+    box-shadow: 2px 2px 2px #BBB;
+    -webkit-transform: rotate(4deg);
+    -moz-transform: rotate(4deg);
+    -o-transform: rotate(4deg);
+    -webkit-backface-visibility: hidden; /* magic command that makes chrome anti-alias (smooth) the edges of rotated elements */
+}
+
+.notes-small > div {
+    overflow: hidden;
+}
+
+.notes-small .label {
+    font-family: cursive;
+    line-height: 1em;
+    -webkit-transform: rotate(-20deg);
+    -moz-transform: rotate(-20deg);
+    -o-transform: rotate(-20deg);
+}
+
+.notes-small .notes-settings-important {
+    color: red;
+}

@@ -1,0 +1,64 @@
+html, body {
+    height: 100%
+}
+
+body {
+    background: black;
+    color: white;
+    margin: 0;
+}
+
+ul {
+    list-style: none;
+    padding-left: 20px;
+}
+
+li.list-selected {
+    color:yellow
+}
+
+#pathPanel {
+    height: 35%;
+    width: 100%;
+    overflow: auto;
+}
+
+#pathPanel span {
+    cursor: pointer;
+}
+
+#notePanel {
+    height: 65%;
+    width: 100%;
+    overflow: hidden;
+}
+
+#notes-dialog {
+    position: relative;
+    padding-top: 25px;
+    color: black;
+}
+
+#notes-dialog .notes-text {
+    outline: 0;
+}
+
+.edited-by, .marked-important {
+    text-align: center;
+    font-style: italic;
+}
+
+.edited-user, .num-read {
+    border-bottom: 1px dotted gray;
+}
+
+.ui-tooltip {
+    font-size: medium;
+    background: black;
+    color: white;
+    border-radius: 13px;
+}
+
+hr {
+    border: 1px dashed lightgrey;
+}
