@@ -27,7 +27,7 @@
     <link type="text/css" rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css"/>
     <link type="text/css" rel="stylesheet" href="css/notes.css"/>
     <link type="text/css" rel="stylesheet" href="css/maintain.css"/>
-    <script src="js/lib/jquery-1.10.2.min.js"></script>
+    <script src="js/lib/jquery-1.11.0.min.js"></script>
     <script src="js/lib/jquery.ui.position.js"></script>
     <script src="js/lib/jquery-ui-1.10.3.min.js"></script>
     <script src="js/lib/jquery.hoverIntent.minified.js"></script>

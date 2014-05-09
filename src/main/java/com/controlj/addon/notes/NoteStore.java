@@ -54,7 +54,7 @@ public class NoteStore {
         final Note note = fromJSON(fillInModificationInfo(jsonObject));
         systemConnection.runWriteAction("", new WriteAction() {
             public void execute(@NotNull WritableSystemAccess systemAccess) throws Exception {
-                Location location = webContext.getLinkedFromLocation(systemAccess.getTree(SystemTree.Geographic));
+                Location location = toLocation(systemAccess, webContext);
                 writeNoteInternal(systemAccess, location, note);
             }
         });
@@ -64,7 +64,7 @@ public class NoteStore {
         final Note note = fromJSON(fillInModificationInfo(jsonObject));
         systemConnection.runWriteAction("", new WriteAction() {
             public void execute(@NotNull WritableSystemAccess systemAccess) throws Exception {
-                Location location = systemAccess.getTree(SystemTree.Geographic).resolve(lookupString);
+                Location location = toLocation(systemAccess, lookupString);
                 writeNoteInternal(systemAccess, location, note);
             }
         });
@@ -73,8 +73,12 @@ public class NoteStore {
     private void writeNoteInternal(WritableSystemAccess systemAccess, Location location, Note note) throws IOException, JSONException {
         DataStore dataStore = systemAccess.getDataStore(location, STORE_NAME);
 
-        try (Writer writer = dataStore.getWriter()) {
-            writeNoteInternal(writer, note);
+        if (note.getText().trim().isEmpty())
+            dataStore.delete();
+        else {
+            try (Writer writer = dataStore.getWriter()) {
+                writeNoteInternal(writer, note);
+            }
         }
     }
 
@@ -147,7 +151,7 @@ public class NoteStore {
     public JSONObject readNote(final WebContext webContext) throws ActionExecutionException, SystemException, IOException, JSONException {
         Note result = systemConnection.runReadAction(new ReadActionResult<Note>() {
             @Nullable @Override public Note execute(@NotNull SystemAccess systemAccess) throws Exception {
-                Location location = webContext.getLinkedFromLocation(systemAccess.getTree(SystemTree.Geographic));
+                Location location = toLocation(systemAccess, webContext);
                 return readNoteInternal(systemAccess, location);
             }
         });
@@ -158,7 +162,7 @@ public class NoteStore {
     public JSONObject readNote(final String lookupString) throws ActionExecutionException, SystemException, IOException, JSONException {
         Note result = systemConnection.runReadAction(new ReadActionResult<Note>() {
             @Nullable @Override public Note execute(@NotNull SystemAccess systemAccess) throws Exception {
-                Location location = systemAccess.getTree(SystemTree.Geographic).resolve(lookupString);
+                Location location = toLocation(systemAccess, lookupString);
                 return readNoteInternal(systemAccess, location);
             }
         });
@@ -179,6 +183,22 @@ public class NoteStore {
         });
 
         return notePaths;
+    }
+
+    private Location toLocation(SystemAccess systemAccess, WebContext webContext) throws UnresolvableException {
+        try {
+            return webContext.getLinkedFromLocation(systemAccess.getTree(SystemTree.Geographic));
+        } catch (UnresolvableException e) {
+            return webContext.getLinkedFromLocation(systemAccess.getTree(SystemTree.Network));
+        }
+    }
+
+    private Location toLocation(SystemAccess systemAccess, String lookupString) throws UnresolvableException {
+        try {
+            return systemAccess.getTree(SystemTree.Geographic).resolve(lookupString);
+        } catch (UnresolvableException e) {
+            return systemAccess.getTree(SystemTree.Network).resolve(lookupString);
+        }
     }
 
     public static List<String> toList(JSONArray array) throws JSONException {

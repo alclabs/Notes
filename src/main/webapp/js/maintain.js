@@ -1,10 +1,11 @@
 $(function() {
     var lastSavedNote;
+    var lastAjaxLoad;
 
     $(document).tooltip();
     var ajax = function() {
         function ajax(command, lookup, note, success, complete) {
-            $.ajax({
+            return $.ajax({
                 url: 'servlets/notes',
                 data: {command: command, lookup: lookup, note: JSON.stringify(note)},
                 dataType: 'json',
@@ -16,14 +17,14 @@ $(function() {
 
         return {
             findNotes: function(success) { ajax('find', undefined, undefined, success); },
-            loadNote: function(lookup, success, complete) { ajax('load', lookup, undefined, success, complete); },
+            loadNote: function(lookup, success, complete) { return ajax('load', lookup, undefined, success, complete); },
             saveNote: function(lookup, note) { ajax('save', lookup, note, undefined); }
         }
     }();
 
     function saveNote(lookup) {
         var notesText = $('#notePanel').find('.notes-text').val();
-        if (lastSavedNote.text !== notesText) {
+        if (lastSavedNote && lastSavedNote.text !== notesText) {
             var curNote = {text: notesText, important: lastSavedNote.important, read: lastSavedNote.read};
             lastSavedNote = curNote;
             ajax.saveNote(lookup, curNote);
@@ -41,7 +42,7 @@ $(function() {
                            '</div>').appendTo(notePanel);
         var notesText = noteDialog.find('.notes-text');
 
-        $(window).on('resize.notes', function() {
+        $(window).off('resize.notes').on('resize.notes', function() {
             noteDialog.css({
                 top: notePanel.height() * 0.15 - parseInt(notePanel.css("padding-top")),
                 height: notePanel.height() * 0.7,
@@ -52,8 +53,10 @@ $(function() {
         });
         $(window).resize();
 
+        lastSavedNote = null;
+        if (lastAjaxLoad) lastAjaxLoad.abort();
         var loadingTimer = setTimeout(function() { notePanel.find('.notes-text').text("Loading data...") }, 250);
-        ajax.loadNote(lookup, function(note) {
+        lastAjaxLoad = ajax.loadNote(lookup, function(note) {
             lastSavedNote = note;
             notePanel.find('.notes-text').text(note.text);
             notePanel.find('.edited-user').text(note.modbydn);

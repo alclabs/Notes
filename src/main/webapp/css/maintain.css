@@ -41,6 +41,9 @@ li.list-selected {
 
 #notes-dialog .notes-text {
     outline: 0;
+    font-family: Verdana,Arial,sans-serif;
+    font-size: 1.3em;
+    white-space: pre-wrap;
 }
 
 .edited-by, .marked-important {

@@ -1,8 +1,8 @@
-var com_controlj_addon_notes = function() {
-    var $ = jQuery.noConflict(true);
+var com_controlj_addon_notes = function($) {
     var addonName;
     var operLogin;
-    var lastSavedNote;
+    var lastSavedNote = {};
+    var origUnloadCallback;
 
     function showDialog(_addonName, _operLogin) {
         addonName = _addonName;
@@ -24,6 +24,12 @@ var com_controlj_addon_notes = function() {
                 close: function() { dlgDiv.remove(); }
             }
         );
+
+        origUnloadCallback=actionContent[0].onunload;
+        actionContent[0].onunload=function(event) {
+            saveAndClose(dlgDiv);
+            origUnloadCallback && origUnloadCallback(event);
+        };
 
         $(window).on('resize.notes', function() {
             dlgDiv.dialog('option',
@@ -78,7 +84,7 @@ var com_controlj_addon_notes = function() {
                     buttons: {
                         Yes: function() {
                             $( this ).dialog( "close" );
-                            close(dlgDiv);
+                            saveAndClose(dlgDiv);
                         },
                         Cancel: function() {
                             $( this ).dialog( "close" );
@@ -86,7 +92,7 @@ var com_controlj_addon_notes = function() {
                     }
                 });
             } else {
-                close(dlgDiv);
+                saveAndClose(dlgDiv);
             }
         });
 
@@ -126,30 +132,38 @@ var com_controlj_addon_notes = function() {
     }
 
     function saveNote(dlgDiv, note) {
-        ajax(dlgDiv, "save", note);
+        ajax(dlgDiv, "save", note).fail(function(jqXHR, textStatus, errorThrown) {
+            alert("Error saving note.  Failure: "+textStatus+" ("+errorThrown+")");
+        });
     }
     function loadNote(dlgDiv, note) {
-        ajax(dlgDiv, "load", note);
+        ajax(dlgDiv, "load", note).fail(function() {
+            close(dlgDiv);
+            alert("Notes are not supported at this location");
+        });
     }
     function ajax(dlgDiv, command, note) {
         var loadingTimer;
-        if (!$.trim(dlgDiv.html()))
+        if (command === "load" && !$.trim(dlgDiv.html()))
             loadingTimer = setTimeout(function() { dlgDiv.html("Loading data...")}, 250);
 
-        $.ajax({
+        var req = $.ajax({
             url: '/'+addonName+'/servlets/notes',
             data: {loc: treeGqlLocation, command: command, note: JSON.stringify(note)},
-            dataType: 'json',
-            cache: false,
-            success: function(note) {
+            dataType: command === "load" ? 'json' : 'text',
+            cache: false
+        });
+        req.done(function(note) {
+            try {
                 dlgDiv.empty();
                 lastSavedNote = note;
                 displayNote(dlgDiv, note);
-            },
-            complete: function() {
-                if (loadingTimer) clearTimeout(loadingTimer);
-            }
+            } catch (e) { /* ignored, we a saving b/c the user is navigating to another page */ }
         });
+        req.always(function() {
+            if (loadingTimer) clearTimeout(loadingTimer);
+        });
+        return req;
     }
 
     function displayNote(dlgDiv, note) {
@@ -159,8 +173,8 @@ var com_controlj_addon_notes = function() {
         setMarkAsReadEnabled(dlgDiv, note.important);
     }
 
-    function close(dlgDiv) {
-        var curNote = {important: isImportantChecked(dlgDiv), text: dlgDiv.find(".notes-text").val(), read: lastSavedNote.read.slice()};
+    function saveAndClose(dlgDiv) {
+        var curNote = {important: isImportantChecked(dlgDiv), text: dlgDiv.find(".notes-text").val(), read: (lastSavedNote.read || []).slice()};
 
         if (!curNote.important)
             curNote.read = [];
@@ -172,19 +186,26 @@ var com_controlj_addon_notes = function() {
                 curNote.read.splice(operIndex, 1);
         }
 
-        dlgDiv.dialog("close");
-        $(window).off('resize.notes');
-        var actionContent = $("#actionContent").contents().find('body');
-        actionContent.find(".ui-widget-overlay").off("click.notes");
+        close(dlgDiv);
 
         if (lastSavedNote.text !== curNote.text || lastSavedNote.important !== curNote.important || lastSavedNote.read.length !== curNote.read.length) {
             lastSavedNote = curNote;
-            window.com_controlj_addon_notes_listener && com_controlj_addon_notes_listener.noteChanged(curNote);
+            try {
+                window.com_controlj_addon_notes_listener && com_controlj_addon_notes_listener.noteChanged(curNote);
+            } catch (e) { /* just ignore it, we are navigating away */ }
             saveNote(dlgDiv, curNote);
         }
+    }
+
+    function close(dlgDiv) {
+        dlgDiv.dialog("close");
+        $(window).off('resize.notes');
+        var actionContent = $("#actionContent").contents().find('body');
+        actionContent[0].onunload=origUnloadCallback;
+        actionContent.find(".ui-widget-overlay").off("click.notes");
     }
 
     return {
         showDialog: showDialog
     };
-}();
+}(jQuery.noConflict(true));

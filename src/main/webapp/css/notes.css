@@ -12,18 +12,23 @@
     height: 100%;
 }
 
-.notes-text {
+#notes-dialog.ui-dialog-content {
+    margin-top: 15px;
+}
+
+#notes-dialog .notes-text {
     height: 100%;
     width: 100%;
-    padding: 10px;
+    padding: 20px 10px;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     background: transparent;
     border: none;
     resize: none;
     overflow: auto;
-    font-size: 1.3em ! important;
-    white-space: pre;
+    font-family: Verdana,Arial,sans-serif;
+    font-size: 1.3em;
+    white-space: pre-wrap;
 }
 
 .notes-settings {
