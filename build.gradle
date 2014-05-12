@@ -8,7 +8,7 @@ apply from: configurations.gradleScript.resolve().iterator().next()
 info {
   name = 'Notes'
   description = 'Provides a way to make and see notes that can be viewable from a graphic'
-  version = '1.0 RC 3'//+new Date().format('yyyy/MM/dd kk:mm:ss')
+  version = '1.0'//+new Date().format('yyyy/MM/dd kk:mm:ss')
   vendor = 'Automated Logic'
   systemMenuProvider = 'com.controlj.addon.notes.NotesMenu'
 }
