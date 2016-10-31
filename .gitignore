@@ -7,3 +7,4 @@ build/
 build.options
 gradle-app.setting
 .gradle/
+*.bak
