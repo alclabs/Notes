@@ -36,6 +36,7 @@ public class NotesServlet extends HttpServlet {
     private static final String FIND_COMMAND = "find";
 
     @Override protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         String command = req.getParameter(COMMAND_PARAM);
         if (command.equalsIgnoreCase(LOAD_COMMAND) || command.equalsIgnoreCase(SAVE_COMMAND)) {
             try {
@@ -46,10 +47,12 @@ public class NotesServlet extends HttpServlet {
                     if (command.equalsIgnoreCase(SAVE_COMMAND)) {
                         String noteParam = req.getParameter(NOTE_PARAM);
                         JSONObject jsonObject = new JSONObject(noteParam);
+                        jsonObject.put("text", new String(jsonObject.getString("text").getBytes("ISO-8859-1"), "UTF-8"));
                         noteStore.writeNote(webContext, jsonObject);
                     } else {
                         JSONObject jsonObject = noteStore.readNote(webContext);
                         resp.setContentType("json");
+                        resp.setCharacterEncoding("UTF-8");
                         jsonObject.write(resp.getWriter());
                     }
                 } else {
@@ -62,6 +65,7 @@ public class NotesServlet extends HttpServlet {
                     } else {
                         JSONObject jsonObject = noteStore.readNote(lookupParam);
                         resp.setContentType("json");
+                        resp.setCharacterEncoding("UTF-8");
                         jsonObject.write(resp.getWriter());
                     }
                 }
@@ -73,6 +77,7 @@ public class NotesServlet extends HttpServlet {
                 NoteStore noteStore = new NoteStore(DirectAccess.getDirectAccess().getUserSystemConnection(req));
                 Collection<LocationReference> locationReferences = noteStore.findNotes();
                 resp.setContentType("json");
+                resp.setCharacterEncoding("UTF-8");
                 JSONWriter jsonWriter = new JSONWriter(resp.getWriter());
                 jsonWriter.array();
                 for (LocationReference reference : locationReferences) {

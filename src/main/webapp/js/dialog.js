@@ -151,6 +151,7 @@ var com_controlj_addon_notes = function($) {
             url: '/'+addonName+'/servlets/notes',
             data: {loc: treeGqlLocation, command: command, note: JSON.stringify(note)},
             dataType: command === "load" ? 'json' : 'text',
+            contentType: "application/x-www-form-urlencoded;charset=UTF-8",
             cache: false
         });
         req.done(function(note) {

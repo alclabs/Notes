@@ -12,6 +12,7 @@
 package com.controlj.addon.notes;
 
 import com.controlj.green.addonsupport.access.*;
+import com.controlj.green.addonsupport.access.WriteAbortedException;
 import com.controlj.green.addonsupport.web.WebContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,10 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,7 +74,7 @@ public class NoteStore {
         if (note.getText().trim().isEmpty())
             dataStore.delete();
         else {
-            try (Writer writer = dataStore.getWriter()) {
+            try (Writer writer = new OutputStreamWriter(dataStore.getOutputStream(), "UTF-8")) {
                 writeNoteInternal(writer, note);
             }
         }
@@ -108,7 +106,7 @@ public class NoteStore {
 
     private Note readNoteInternal(SystemAccess systemAccess, Location location) throws IOException, JSONException {
         DataStore dataStore = systemAccess.getDataStore(location, STORE_NAME);
-        try (BufferedReader reader = dataStore.getReader()) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(dataStore.getInputStream(), "UTF-8"))) {
             return readNoteInternal(reader);
         }
     }
