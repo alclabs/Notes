@@ -7,7 +7,7 @@
    @(#)ServiceHistoryServlet
 
    Author(s) jmurph
-   $Log: $    
+   $Log: $
 =============================================================================*/
 package com.controlj.addon.notes;
 
@@ -52,11 +52,7 @@ public class NotesServlet extends HttpServlet {
                     } else {
                         JSONObject jsonObject = noteStore.readNote(webContext);
                         resp.setContentType("json");
-<<<<<<< HEAD
                         resp.setCharacterEncoding("UTF-8");
-=======
-                        resp.setCharacterEncoding("utf-8");
->>>>>>> d81dbeee7ceddf83a99f8f3b5cdadeada3567b22
                         jsonObject.write(resp.getWriter());
                     }
                 } else {
@@ -69,11 +65,7 @@ public class NotesServlet extends HttpServlet {
                     } else {
                         JSONObject jsonObject = noteStore.readNote(lookupParam);
                         resp.setContentType("json");
-<<<<<<< HEAD
                         resp.setCharacterEncoding("UTF-8");
-=======
-                        resp.setCharacterEncoding("utf-8");
->>>>>>> d81dbeee7ceddf83a99f8f3b5cdadeada3567b22
                         jsonObject.write(resp.getWriter());
                     }
                 }
@@ -85,11 +77,7 @@ public class NotesServlet extends HttpServlet {
                 NoteStore noteStore = new NoteStore(DirectAccess.getDirectAccess().getUserSystemConnection(req));
                 Collection<LocationReference> locationReferences = noteStore.findNotes();
                 resp.setContentType("json");
-<<<<<<< HEAD
                 resp.setCharacterEncoding("UTF-8");
-=======
-                resp.setCharacterEncoding("utf-8");
->>>>>>> d81dbeee7ceddf83a99f8f3b5cdadeada3567b22
                 JSONWriter jsonWriter = new JSONWriter(resp.getWriter());
                 jsonWriter.array();
                 for (LocationReference reference : locationReferences) {
