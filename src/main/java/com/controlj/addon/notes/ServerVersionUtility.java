@@ -20,15 +20,15 @@ public class ServerVersionUtility {
       this.addOnInfo = addOnInfo;
    }
 
-   public boolean isPre65() {
+   public boolean isPre61() {
       String versionNumberString = addOnInfo.getServerVersion().getVersionNumber();
 
       try {
          double versionNumber = Double.parseDouble(versionNumberString);
-         return versionNumber < 6.5;
+         return versionNumber < 6.1;
       } catch (NumberFormatException e) {
-         // all versions before 6.5 were numbers that could be parsed.  If we cannot parse it anymore, it must be
-         // after 6.5 (and no longer a number?).
+         // all versions before 6.1 were numbers that could be parsed.  If we cannot parse it anymore, it must be
+         // after 6.1 (and no longer a number?).
          return false;
       }
    }

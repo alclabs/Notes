@@ -25,13 +25,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class NotesServlet extends HttpServlet {
-    private static final Charset UTF_8 = StandardCharsets.UTF_8;
     private static final String JSON_CONTENT_TYPE = "json";
 
     private static final String COMMAND_PARAM = "command";
@@ -45,7 +43,7 @@ public class NotesServlet extends HttpServlet {
     private static final String FIND_COMMAND = "find";
 
     @Override protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding(UTF_8.name());
+        req.setCharacterEncoding(StandardCharsets.UTF_8.name());
         String command = req.getParameter(COMMAND_PARAM);
         if (command.equalsIgnoreCase(LOAD_COMMAND) || command.equalsIgnoreCase(SAVE_COMMAND)) {
             try {
@@ -56,12 +54,13 @@ public class NotesServlet extends HttpServlet {
                     if (command.equalsIgnoreCase(SAVE_COMMAND)) {
                         String noteParam = req.getParameter(NOTE_PARAM);
                         JSONObject jsonObject = new JSONObject(noteParam);
-                        jsonObject.put(TEXT_PARAM, new String(jsonObject.getString(TEXT_PARAM).getBytes(determineEncoding()), UTF_8));
+                        if (isPre61())
+                            jsonObject.put(TEXT_PARAM, new String(jsonObject.getString(TEXT_PARAM).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
                         noteStore.writeNote(webContext, jsonObject);
                     } else {
                         JSONObject jsonObject = noteStore.readNote(webContext);
                         resp.setContentType(JSON_CONTENT_TYPE);
-                        resp.setCharacterEncoding(UTF_8.name());
+                        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
                         jsonObject.write(resp.getWriter());
                     }
                 } else {
@@ -74,7 +73,7 @@ public class NotesServlet extends HttpServlet {
                     } else {
                         JSONObject jsonObject = noteStore.readNote(lookupParam);
                         resp.setContentType(JSON_CONTENT_TYPE);
-                        resp.setCharacterEncoding(UTF_8.name());
+                        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
                         jsonObject.write(resp.getWriter());
                     }
                 }
@@ -86,7 +85,7 @@ public class NotesServlet extends HttpServlet {
                 NoteStore noteStore = new NoteStore(DirectAccess.getDirectAccess().getUserSystemConnection(req));
                 Collection<LocationReference> locationReferences = noteStore.findNotes();
                 resp.setContentType(JSON_CONTENT_TYPE);
-                resp.setCharacterEncoding(UTF_8.name());
+                resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 JSONWriter jsonWriter = new JSONWriter(resp.getWriter());
                 jsonWriter.array();
                 for (LocationReference reference : locationReferences) {
@@ -102,17 +101,15 @@ public class NotesServlet extends HttpServlet {
         }
     }
 
-    private static AtomicReference<Charset> encodingRef = new AtomicReference<>();
+    private static AtomicReference<Boolean> isPre61Ref = new AtomicReference<>();
 
-    // WebCTRL versions prior to 6.5 used the default charset for request/response encodings.  In 6.5 we changed it to be UTF-8.
-    private static Charset determineEncoding() {
-        Charset encoding = encodingRef.get();
-        if (encoding == null) {
-            boolean pre65 = new ServerVersionUtility(AddOnInfo.getAddOnInfo()).isPre65();
-            encoding = pre65 ? Charset.defaultCharset() : UTF_8;
-            encodingRef.set(encoding);
+    private static boolean isPre61() {
+        Boolean isPre61 = isPre61Ref.get();
+        if (isPre61 == null) {
+            isPre61 = new ServerVersionUtility(AddOnInfo.getAddOnInfo()).isPre61();
+            isPre61Ref.set(isPre61);
         }
-        return encoding;
+        return isPre61;
     }
 }
 
